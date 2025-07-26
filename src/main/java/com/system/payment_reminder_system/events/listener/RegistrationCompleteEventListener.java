@@ -19,7 +19,7 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
 
         // call otpService to generate and send otp via mail
         User user = event.getUser();
-        System.out.println("\n******* listener aa gye *********\n");
+
         otpService.generateAndSendOtp(user);
 
     }

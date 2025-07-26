@@ -19,20 +19,12 @@ public class Otp {
 
     private String otp;
 
+    private String userName;
+
     private LocalDateTime expirationTime;
 
-    @OneToOne(
-            fetch = FetchType.EAGER
-    )
-    @JoinColumn(
-            name = "user_id",
-            nullable = false,
-            foreignKey = @ForeignKey(name = "FK_USER_VERIFY_TOKEN")
-//            referencedColumnName = "userId"
-    )
-    private User user;
 
-//
+
 //    public Otp(String otp, User user) {
 //        this.otp = otp;
 //        this.user = user;

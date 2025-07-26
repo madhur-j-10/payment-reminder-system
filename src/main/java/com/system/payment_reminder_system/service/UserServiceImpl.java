@@ -1,13 +1,18 @@
 package com.system.payment_reminder_system.service;
 
 
+import com.system.payment_reminder_system.entity.Otp;
 import com.system.payment_reminder_system.entity.User;
 import com.system.payment_reminder_system.events.RegistrationCompleteEvent;
+import com.system.payment_reminder_system.model.OtpModel;
 import com.system.payment_reminder_system.model.UserModel;
+import com.system.payment_reminder_system.repository.OtpRepository;
 import com.system.payment_reminder_system.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -17,11 +22,14 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Autowired
+    private OtpService otpService;
+
+    @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
 
     @Override
-    public User registerUser(UserModel userModel) {
+    public void registerUser(UserModel userModel) {
 
         User user = new User();
         user.setUserName(userModel.getUserName());
@@ -29,11 +37,20 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(user);
 
-        System.out.println("\n******* user saved User Service*********\n");
-
-
         applicationEventPublisher.publishEvent(new RegistrationCompleteEvent(user));
 
-        return user;
+    }
+
+    @Override
+    public boolean verifyOtp(OtpModel otpModel) {
+
+       boolean isValid = otpService.verifyOtp(otpModel);
+       if(isValid) {
+           User user = userRepository.findByUserName(otpModel.getUserName());
+           user.setVerified(true);
+           userRepository.save(user);
+       }
+       return isValid;
+
     }
 }
