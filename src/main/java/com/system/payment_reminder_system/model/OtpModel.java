@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class OtpModel {
 
-    private String userName;
+    private String email;
     private String otp;
 
 }

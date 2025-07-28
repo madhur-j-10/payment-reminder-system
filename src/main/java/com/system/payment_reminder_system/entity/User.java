@@ -18,8 +18,8 @@ public class User {
     private Long userId;
 
     //make compulsory both username and email
-    private String userName;
-    private String userEmail;
+    private String username;
+    private String email;
 
     private boolean isVerified = false;
 

@@ -1,6 +1,6 @@
 package com.system.payment_reminder_system.service;
 
-import com.system.payment_reminder_system.entity.Otp;
+import com.system.payment_reminder_system.entity.OtpEntity;
 import com.system.payment_reminder_system.entity.User;
 import com.system.payment_reminder_system.model.OtpModel;
 import com.system.payment_reminder_system.repository.OtpRepository;
@@ -20,33 +20,36 @@ public class OtpServiceImpl implements OtpService{
     private EmailService emailService;
 
     @Override
-    public void generateAndSendOtp(User user) {
+    public void generateAndSendOtp(String email) {
 
         String otp = String.valueOf((int) (Math.random() * 900000) + 100000); // 6-digit OTP
 
-        Otp otpEntity = new Otp();
+        //creating otp entity to save in DB
+        OtpEntity otpEntity = new OtpEntity();
         otpEntity.setOtp(otp);
-        otpEntity.setUserName(user.getUserName());
-        otpEntity.setExpirationTime(LocalDateTime.now().plusMinutes(5));
+        otpEntity.setEmail(email);
+        otpEntity.setExpirationTime(LocalDateTime.now().plusMinutes(2));
 
+        // save otp to DB
         otpRepository.save(otpEntity);
 
-        emailService.sendMail(user.getUserEmail(),"OTP For verification", "Your OTP is: " + otp);
+        //send otp to user
+        emailService.sendMail(email,"OTP For verification", "Your OTP is\n" + otp);
 
     }
 
     @Override
-    public boolean verifyOtp(OtpModel otpModel) {
+    public boolean verifyOtp(String otp, String email) {
 
-        // to avoid NullPointerException
-        Optional<Otp> otpData =
-                otpRepository.findByOtpAndUserName(otpModel.getOtp(),otpModel.getUserName());
+            //to avoid NullPointerException
+            Optional<OtpEntity> otpData =
+                otpRepository.findByOtpAndEmail(otp,email);
 
+        // checking that otp and email matches or not , and check expiry of otp
         if(otpData.isPresent() && otpData.get().getExpirationTime().isAfter(LocalDateTime.now())) {
             otpRepository.delete(otpData.get());
             return true;
         }
-
         return false;
     }
 

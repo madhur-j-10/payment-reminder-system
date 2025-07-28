@@ -1,21 +1,15 @@
 package com.system.payment_reminder_system.service;
 
 
-import com.system.payment_reminder_system.entity.Otp;
 import com.system.payment_reminder_system.entity.User;
-import com.system.payment_reminder_system.events.RegistrationCompleteEvent;
-import com.system.payment_reminder_system.model.OtpModel;
 import com.system.payment_reminder_system.model.UserModel;
-import com.system.payment_reminder_system.repository.OtpRepository;
 import com.system.payment_reminder_system.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-
 @Service
-public class UserServiceImpl implements UserService {
+public class AuthServiceImpl implements AuthService {
 
 
     @Autowired
@@ -31,23 +25,28 @@ public class UserServiceImpl implements UserService {
     @Override
     public void registerUser(UserModel userModel) {
 
+        //creating User entity for saving in DB
         User user = new User();
-        user.setUserName(userModel.getUserName());
-        user.setUserEmail(userModel.getUserEmail());
+        user.setUsername(userModel.getUsername());
+        user.setEmail(userModel.getEmail());
 
+        //save user in DB
         userRepository.save(user);
-
-        applicationEventPublisher.publishEvent(new RegistrationCompleteEvent(user));
-
+        // generate and send otp to user for confirmation of email
+        otpService.generateAndSendOtp(user.getEmail());
     }
 
     @Override
-    public boolean verifyOtp(OtpModel otpModel) {
+    public boolean verifyOtp(String otp, String email) {
 
-       boolean isValid = otpService.verifyOtp(otpModel);
+        //verifying otp for confirming email
+       boolean isValid = otpService.verifyOtp(otp, email);
        if(isValid) {
-           User user = userRepository.findByUserName(otpModel.getUserName());
+           //extract user from email
+           User user = userRepository.findByEmail(email);
+           // set isVerified as TRUE
            user.setVerified(true);
+           //save user
            userRepository.save(user);
        }
        return isValid;

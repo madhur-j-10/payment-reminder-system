@@ -1,15 +1,16 @@
 package com.system.payment_reminder_system.repository;
 
-import com.system.payment_reminder_system.entity.Otp;
+import com.system.payment_reminder_system.entity.OtpEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface OtpRepository extends JpaRepository<Otp,Long> {
-    Otp findByOtp(String otp);
+public interface OtpRepository extends JpaRepository<OtpEntity,Long> {
+    OtpEntity findByOtp(String otp);
 
 
-    Optional<Otp> findByOtpAndUserName(String otp, String userName);
+    Optional<OtpEntity> findByOtpAndEmail(String otp, String email);
+
 }

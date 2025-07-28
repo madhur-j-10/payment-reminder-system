@@ -4,7 +4,7 @@ import com.system.payment_reminder_system.entity.User;
 import com.system.payment_reminder_system.model.OtpModel;
 
 public interface OtpService {
-    void generateAndSendOtp(User user);
+    void generateAndSendOtp(String email);
 
-    boolean verifyOtp(OtpModel otpModel);
+    boolean verifyOtp(String otp, String email);
 }

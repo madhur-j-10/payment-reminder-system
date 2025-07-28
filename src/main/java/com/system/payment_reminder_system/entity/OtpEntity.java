@@ -2,7 +2,6 @@ package com.system.payment_reminder_system.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -11,7 +10,7 @@ import java.time.LocalDateTime;
 @Table(name = "otp_table")
 @Data
 @NoArgsConstructor
-public class Otp {
+public class OtpEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,7 +18,7 @@ public class Otp {
 
     private String otp;
 
-    private String userName;
+    private String email;
 
     private LocalDateTime expirationTime;
 

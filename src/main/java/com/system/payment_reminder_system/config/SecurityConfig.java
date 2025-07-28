@@ -10,7 +10,11 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-public class WebSecurityConfig {
+public class SecurityConfig {
+
+    private final String[] WHITE_LIST_URLS = {
+      "/auth/**"
+    };
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -18,7 +22,8 @@ public class WebSecurityConfig {
                 .cors(cors -> {})
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
+                        .requestMatchers(WHITE_LIST_URLS).permitAll()
+                        .anyRequest().authenticated()
                 );
 
         return http.build();
