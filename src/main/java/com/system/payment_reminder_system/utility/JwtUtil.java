@@ -1,9 +1,12 @@
 package com.system.payment_reminder_system.utility;
 
+import com.system.payment_reminder_system.entity.User;
+import com.system.payment_reminder_system.repository.UserRepository;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +16,12 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
+
+    @Autowired
+    private UserRepository userRepository;
+
+
+
     private final long EXPIRATION_TIME = 1000*60*60; // 1 hour
     @Value("${JWT_SECRET}")
     private String Secret;
@@ -20,7 +29,7 @@ public class JwtUtil {
 
     @PostConstruct
     public void init() {
-//        System.out.println("JWT Secret = " + Secret);
+
         if (Secret == null || Secret.length() < 32) {
             throw new RuntimeException("JWT_SECRET is missing or too short (must be 32+ chars)");
         }
@@ -57,6 +66,16 @@ public class JwtUtil {
         } catch (JwtException e) {
             return false;
         }
+
+    }
+
+
+    public Long getUserIdFromEmail(String email) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("USER NOT FOUND!!"));
+
+        return user.getUserId();
 
     }
 
