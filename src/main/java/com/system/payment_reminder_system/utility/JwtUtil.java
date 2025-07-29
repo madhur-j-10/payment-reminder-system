@@ -1,7 +1,10 @@
 package com.system.payment_reminder_system.utility;
 
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -11,8 +14,18 @@ import java.util.Date;
 public class JwtUtil {
 
     private final long EXPIRATION_TIME = 1000*60*60; // 1 hour
-    private final String Secret = "thi$ shouldn't be upload on github because it is confidenti@l #$%1235";
-    private final SecretKey key = Keys.hmacShaKeyFor(Secret.getBytes());
+    @Value("${JWT_SECRET}")
+    private String Secret;
+    private SecretKey key;
+
+    @PostConstruct
+    public void init() {
+//        System.out.println("JWT Secret = " + Secret);
+        if (Secret == null || Secret.length() < 32) {
+            throw new RuntimeException("JWT_SECRET is missing or too short (must be 32+ chars)");
+        }
+        this.key = Keys.hmacShaKeyFor(Secret.getBytes());
+    }
 
     public String generateToken(String email) {
 
@@ -22,6 +35,29 @@ public class JwtUtil {
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(key)
                 .compact();
+    }
+
+    public String extractEmail(String token) {
+        return Jwts.parser()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        } catch (JwtException e) {
+            return false;
+        }
+
     }
 
 }
