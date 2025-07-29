@@ -10,4 +10,10 @@ public interface AuthService {
     String verifyOtp(String otp, String email);
 
     void resendOtp(String email);
+
+    boolean isUserExists(String email);
+
+    String verifyLoginOtp(String otp, String email);
+
+    String sendLoginOtp(String email);
 }

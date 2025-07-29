@@ -3,6 +3,10 @@ package com.system.payment_reminder_system.controller;
 import com.system.payment_reminder_system.model.OtpModel;
 import com.system.payment_reminder_system.model.UserModel;
 import com.system.payment_reminder_system.service.AuthService;
+import com.system.payment_reminder_system.service.OtpService;
+import com.system.payment_reminder_system.utility.JwtUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +20,12 @@ public class AuthController {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private OtpService otpService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
 
     @GetMapping("/register")
@@ -49,7 +59,7 @@ public class AuthController {
                              @RequestParam String otp,
                              Model model) {
 
-
+        //returns empty string if verified successfully else return error message
         String result = authService.verifyOtp(otp,email);
 
         // verified --> redirect to /auth/register
@@ -61,6 +71,7 @@ public class AuthController {
 
 
         model.addAttribute("registerFlag","abc");
+        model.addAttribute("email",email);
         model.addAttribute("error", result);
 
         return "otpPage";
@@ -74,6 +85,67 @@ public class AuthController {
 
         model.addAttribute("registerFlag","abc");
         model.addAttribute("email", email);
+        return "otpPage";
+    }
+
+    @PostMapping("/send-otp")
+    public String sendLoginOtp(@RequestParam String email,
+                               Model model) {
+        //check user exists or not by email
+        if(authService.isUserExists(email)){
+
+            //check user is verified or not
+            String result = authService.sendLoginOtp(email);
+
+            //send otp to user for login(if verified)
+            if("".equals(result)){
+                model.addAttribute("loginFlag", "123");
+                model.addAttribute("email", email);
+                //redirect to otpPage for verification
+                return "otpPage";
+            }
+
+            if("notVerified".equalsIgnoreCase(result)){
+                model.addAttribute("error", "User Not Verified!!");
+                return "index";
+            }
+
+        }
+
+        model.addAttribute("error", "User Not Exists!!");
+        return "index";
+    }
+
+    @PostMapping("/verify-login-otp")
+    public String verifyLoginOtp(@RequestParam String email,
+                                 @RequestParam String otp,
+                                 HttpServletResponse response,
+                                 Model model) {
+        //returns empty string if verified successfully else return error message
+        String result = authService.verifyLoginOtp(otp, email);
+
+        if("".equals(result)){
+
+            //generate JWT
+            String token = jwtUtil.generateToken(email);
+
+            //Store Jwt in browser cookies
+            Cookie cookie = new Cookie("jwt", token);
+            cookie.setHttpOnly(true);// Prevent JS access
+            cookie.setSecure(false); // true in production
+            cookie.setPath("/");// Cookie is sent to all endpoints of this app
+            cookie.setMaxAge(3600); //1 hour expiry
+            response.addCookie(cookie); // Add cookie to response
+
+            // go to dashboard
+            return "redirect:/dashboard";
+
+        }
+
+        model.addAttribute("loginFlag","123");
+        model.addAttribute("email",email);
+        model.addAttribute("error", result);
+
         return "otpPage";
     }
 

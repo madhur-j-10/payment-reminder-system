@@ -73,4 +73,37 @@ public class AuthServiceImpl implements AuthService {
         otpService.generateAndSendOtp(email);
 
     }
+
+    @Override
+    public boolean isUserExists(String email) {
+
+        if(userRepository.findByEmail(email).isPresent())
+            return true;
+        return false;
+    }
+
+    @Override
+    public String verifyLoginOtp(String otp, String email) {
+
+        return otpService.verifyOtp(otp,email);
+    }
+
+    @Override
+    public String sendLoginOtp(String email) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if(user.isVerified()){
+
+            otpService.generateAndSendOtp(email);
+            return "";
+
+        }
+
+        return "notVerified";
+
+    }
+
+
 }
