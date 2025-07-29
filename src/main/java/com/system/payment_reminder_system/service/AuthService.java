@@ -5,7 +5,9 @@ import com.system.payment_reminder_system.model.OtpModel;
 import com.system.payment_reminder_system.model.UserModel;
 
 public interface AuthService {
-    void registerUser(UserModel userModel);
+    String registerUser(UserModel userModel);
 
-    boolean verifyOtp(String otp, String email);
+    String verifyOtp(String otp, String email);
+
+    void resendOtp(String email);
 }

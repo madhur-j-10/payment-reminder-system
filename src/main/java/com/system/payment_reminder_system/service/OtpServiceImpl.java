@@ -24,22 +24,32 @@ public class OtpServiceImpl implements OtpService{
 
         String otp = String.valueOf((int) (Math.random() * 900000) + 100000); // 6-digit OTP
 
-        //creating otp entity to save in DB
-        OtpEntity otpEntity = new OtpEntity();
-        otpEntity.setOtp(otp);
-        otpEntity.setEmail(email);
-        otpEntity.setExpirationTime(LocalDateTime.now().plusMinutes(2));
+        if(otpRepository.findByEmail(email).isPresent()){
+            OtpEntity otpEntity = otpRepository.findByEmail(email).get();
+            otpEntity.setOtp(otp);
+            otpEntity.setExpirationTime(LocalDateTime.now().plusMinutes(1));
+            otpRepository.save(otpEntity);
+            emailService.sendMail(email,"OTP For verification", "Your OTP is\n" + otp);
 
-        // save otp to DB
-        otpRepository.save(otpEntity);
+        }
+        else {
+            //creating otp entity to save in DB
+            OtpEntity otpEntity = new OtpEntity();
+            otpEntity.setOtp(otp);
+            otpEntity.setEmail(email);
+            otpEntity.setExpirationTime(LocalDateTime.now().plusMinutes(1));
 
-        //send otp to user
-        emailService.sendMail(email,"OTP For verification", "Your OTP is\n" + otp);
+            // save otp to DB
+            otpRepository.save(otpEntity);
+
+            //send otp to user
+            emailService.sendMail(email,"OTP For verification", "Your OTP is\n" + otp);
+        }
 
     }
 
     @Override
-    public boolean verifyOtp(String otp, String email) {
+    public String verifyOtp(String otp, String email) {
 
             //to avoid NullPointerException
             Optional<OtpEntity> otpData =
@@ -48,9 +58,14 @@ public class OtpServiceImpl implements OtpService{
         // checking that otp and email matches or not , and check expiry of otp
         if(otpData.isPresent() && otpData.get().getExpirationTime().isAfter(LocalDateTime.now())) {
             otpRepository.delete(otpData.get());
-            return true;
+            return "";
         }
-        return false;
+        if(otpData.isEmpty()){
+            return "Incorrect OTP";
+        }
+        // deleting expired otp while verifying
+        otpRepository.delete(otpData.get());
+        return "Otp Expired!!";
     }
 
 

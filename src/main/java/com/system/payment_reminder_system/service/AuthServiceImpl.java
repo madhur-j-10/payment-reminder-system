@@ -23,7 +23,19 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public void registerUser(UserModel userModel) {
+    public String registerUser(UserModel userModel) {
+
+        if(userRepository.findByEmail(userModel.getEmail()).isPresent()){
+            User user = userRepository.findByEmail(userModel.getEmail()).get();
+
+            if(user.isVerified()){
+                return "User Already Exists!!";
+            }
+            user.setUsername(userModel.getUsername());
+            userRepository.save(user);
+            otpService.generateAndSendOtp(user.getEmail());
+            return "";
+        }
 
         //creating User entity for saving in DB
         User user = new User();
@@ -34,22 +46,31 @@ public class AuthServiceImpl implements AuthService {
         userRepository.save(user);
         // generate and send otp to user for confirmation of email
         otpService.generateAndSendOtp(user.getEmail());
+        return "";
     }
 
     @Override
-    public boolean verifyOtp(String otp, String email) {
+    public String verifyOtp(String otp, String email) {
 
         //verifying otp for confirming email
-       boolean isValid = otpService.verifyOtp(otp, email);
-       if(isValid) {
+       String result = otpService.verifyOtp(otp, email);
+       if("".equals(result)) {
            //extract user from email
-           User user = userRepository.findByEmail(email);
+           User user = userRepository.findByEmail(email)
+                   .orElseThrow(() -> new RuntimeException("No user with email:" + email));
            // set isVerified as TRUE
            user.setVerified(true);
            //save user
            userRepository.save(user);
        }
-       return isValid;
+       return result;
+
+    }
+
+    @Override
+    public void resendOtp(String email) {
+
+        otpService.generateAndSendOtp(email);
 
     }
 }

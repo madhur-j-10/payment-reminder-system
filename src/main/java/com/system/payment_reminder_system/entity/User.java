@@ -18,7 +18,9 @@ public class User {
     private Long userId;
 
     //make compulsory both username and email
+    @Column(nullable = false)
     private String username;
+    @Column(nullable = false)
     private String email;
 
     private boolean isVerified = false;
