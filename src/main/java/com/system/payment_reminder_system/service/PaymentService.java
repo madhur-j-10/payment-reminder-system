@@ -14,4 +14,6 @@ public interface PaymentService {
     void updateStatus(Long id, PaymentStatus status, Long userId);
 
     void deletePayment(Long id, Long userId);
+
+    void sendPaymentReminder();
 }

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .card { padding: 20px; border: 1px solid #ddd; border-radius: 10px; }
+        .btn { background-color: #28a745; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h2 th:text="'Hello, ' + ${name} + ' 👋'"></h2>
+    <p th:text="${message}"></p>
+
+    <h3>Payment Summary:</h3>
+    <ul>
+        <li><strong>Amount:</strong> ₹<span th:text="${amount}"></span></li>
+        <li><strong>Due Date:</strong> <span th:text="${dueDate}"></span></li>
+        <li><strong>Title:</strong> <span th:text="${category}"></span></li>
+    </ul>
+
+    <a th:href="@{${url}}" class="btn">Manage Payment</a>
+</div>
+</body>
+</html>

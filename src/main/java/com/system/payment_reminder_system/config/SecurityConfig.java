@@ -20,7 +20,7 @@ public class SecurityConfig {
     private JwtFilter jwtFilter;
 
     private final String[] WHITE_LIST_URLS = {
-      "/auth/**","/css/**","/js/**"
+      "/auth/**","/css/**","/js/**","/test/**"
     };
 
     @Bean
