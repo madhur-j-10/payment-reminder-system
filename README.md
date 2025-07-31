@@ -49,10 +49,66 @@ This is done using a Spring `@Scheduled` cron job.
 
 ---
 
-##  Cron Job Setup
+## Getting Started
 
-```java
-@Scheduled(cron = "0 0 9 * * ?") // Runs every day at 9 AM
-public void sendDailyReminders() {
-    paymentService.sendPaymentReminders();
-}
+Prerequisites
+- **Java 17 or later**
+- **Maven**
+- **MySQL installed and running**
+- **SMTP-enabled email (e.g. Gmail)**
+
+
+
+First Clone the repository
+
+1. Set up the MySQL database:
+
+```bash
+CREATE DATABASE payment_db;
+```
+
+2. Update application.yml:
+
+- **Add your MySQL credentials**
+- **Add your email SMTP details**
+- **Add a secure JWT secret key**
+
+```yml
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/payment_db
+    username: root
+    password: <your_sql_password>
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: update
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: <from_email_id>
+    password: <app_password>
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+JWT_SECRET: <your secret key>
+```
+3. Run the project:
+ ```bash
+./mvnw spring-boot:run
+```
+4. Access the app:
+ ```bash
+http://localhost:8080/auth/register
+```
+## Testing Paymemt Reminder without Waiting for 9AM 
+visit this after login
+
+```bash
+http://localhost:8080/test/reminder
+```
