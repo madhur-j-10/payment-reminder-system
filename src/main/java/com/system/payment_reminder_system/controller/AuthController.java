@@ -1,6 +1,5 @@
 package com.system.payment_reminder_system.controller;
 
-import com.system.payment_reminder_system.model.OtpModel;
 import com.system.payment_reminder_system.model.UserModel;
 import com.system.payment_reminder_system.service.AuthService;
 import com.system.payment_reminder_system.service.OtpService;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 
 
 @Controller
@@ -30,7 +28,6 @@ public class AuthController {
 
     @GetMapping("/register")
     private String registrationPage() {
-
         return "index";
     }
 
@@ -107,12 +104,14 @@ public class AuthController {
 
             if("notVerified".equalsIgnoreCase(result)){
                 model.addAttribute("error", "User Not Verified!!");
+                //redirect instead of returning page
                 return "index";
             }
 
         }
 
         model.addAttribute("error", "User Not Exists!!");
+        //redirect instead of returning page
         return "index";
     }
 
@@ -134,7 +133,7 @@ public class AuthController {
             cookie.setHttpOnly(true);// Prevent JS access
             cookie.setSecure(false); // true in production
             cookie.setPath("/");// Cookie is sent to all endpoints of this app
-            cookie.setMaxAge(3600); //1 hour expiry
+            cookie.setMaxAge(60*61); //1 hour and 1 min expiry
             response.addCookie(cookie); // Add cookie to response
 
             // go to dashboard

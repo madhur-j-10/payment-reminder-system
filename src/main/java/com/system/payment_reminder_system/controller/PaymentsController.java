@@ -8,10 +8,9 @@ import com.system.payment_reminder_system.model.PaymentStatus;
 import com.system.payment_reminder_system.repository.UserRepository;
 import com.system.payment_reminder_system.service.PaymentService;
 import com.system.payment_reminder_system.utility.JwtUtil;
-
-
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -94,9 +93,16 @@ public class PaymentsController {
         return user.getUsername();
     }
 
+    @PostMapping("/logout")
+    public void logout(HttpServletResponse response) {
 
-
-
+        Cookie jwtCookie = new Cookie("jwt", null);
+        jwtCookie.setHttpOnly(true);// Prevent JS access
+        jwtCookie.setSecure(false); // true in production
+        jwtCookie.setPath("/");// Cookie is sent to all endpoints of this app
+        jwtCookie.setMaxAge(0); // delete it immediatly
+        response.addCookie(jwtCookie); // Add cookie to response
+    }
 
 }
 

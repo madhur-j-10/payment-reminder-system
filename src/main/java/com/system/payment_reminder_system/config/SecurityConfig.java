@@ -2,6 +2,7 @@ package com.system.payment_reminder_system.config;
 
 
 import com.system.payment_reminder_system.filters.JwtFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +21,7 @@ public class SecurityConfig {
     private JwtFilter jwtFilter;
 
     private final String[] WHITE_LIST_URLS = {
-      "/auth/**","/css/**","/js/**","/test/**"
+      "/auth/**","/css/**","/js/**"
     };
 
     @Bean
@@ -34,6 +35,20 @@ public class SecurityConfig {
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .exceptionHandling(exception -> exception
+                .authenticationEntryPoint((request, response, authException) -> {
+
+                    String msg = "unauthorized"; // default
+
+                    if(request.getAttribute("expired") != null){
+                        msg = "expired";
+
+                    }
+
+                    response.sendRedirect("/auth/register?msg=" + msg);
+
+                })
                 );
         //add our custom filter
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

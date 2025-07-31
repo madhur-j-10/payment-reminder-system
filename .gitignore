@@ -38,3 +38,15 @@ build/
 #git rm --cached src/main/resources/application.yml
 
 src/main/resources/application.yml
+
+src/main/resources/templates/smsOtpPage.html
+src/main/resources/templates/smsIndex.html
+src/main/java/com/system/payment_reminder_system/utility/SmsJwtUtil.java
+src/main/java/com/system/payment_reminder_system/service/TwilioSmsService.java
+src/main/java/com/system/payment_reminder_system/service/SmsPaymentServiceImpl.java
+src/main/java/com/system/payment_reminder_system/service/SmsOtpServiceImpl.java
+src/main/java/com/system/payment_reminder_system/service/SmsAuthServiceImpl.java
+src/main/java/com/system/payment_reminder_system/filters/SmsJwtFilter.java
+src/main/java/com/system/payment_reminder_system/entity/SmsUser.java
+src/main/java/com/system/payment_reminder_system/config/SmsSecurityConfig.java
+src/main/java/com/system/payment_reminder_system/controller/SmsAuthController.java

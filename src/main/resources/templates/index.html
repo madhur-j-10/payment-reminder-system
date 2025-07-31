@@ -79,6 +79,13 @@
 <body>
 
     <h1>This is Home Page</h1>
+
+    <div id="alert" style="color:red; font-weight:bold;"></div>
+
+    <div id="info" style="color:green; font-weight:bold;"></div>
+
+
+
     <h2>Register User</h2>
 
     <form action="/auth/register" method="post">
@@ -105,6 +112,22 @@
     </div>
 
 
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const msg = params.get("msg");
 
+    if (msg === "unauthorized") {
+      document.getElementById("alert").innerText = "⚠️ Unauthorized access. Please Login first.";
+    }
+    else if(msg === "loggedOut"){
+      document.getElementById("info").innerText = "Logged Out Successfully!";
+    }
+    else if (msg === "expired") {
+      document.getElementById("alert").innerText = "⚠️ Session of 1 hour has expired. Please Login again.";
+    }
+
+
+
+</script>
 </body>
 </html>

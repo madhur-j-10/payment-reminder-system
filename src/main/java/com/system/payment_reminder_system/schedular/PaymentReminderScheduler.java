@@ -13,8 +13,6 @@ public class PaymentReminderScheduler {
     private PaymentService paymentService;
 
     @Scheduled(cron = "0 0 9 * * ?", zone = "Asia/Kolkata")
-    public void SendDailyReminders() {
-        paymentService.sendPaymentReminder();
-    }
+    public void SendDailyReminders() {paymentService.sendPaymentReminder();}
 
 }

@@ -115,7 +115,7 @@ public class PaymentServiceImpl implements PaymentService{
     }
 
     private void sendReminder(Payment payment, String type) {
-        
+
 
         User user = userRepository.findById(payment.getUserId())
                 .orElseThrow(() -> new RuntimeException("user not found!!"));

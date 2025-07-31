@@ -1,8 +1,6 @@
 package com.system.payment_reminder_system.service;
 
 import com.system.payment_reminder_system.entity.OtpEntity;
-import com.system.payment_reminder_system.entity.User;
-import com.system.payment_reminder_system.model.OtpModel;
 import com.system.payment_reminder_system.repository.OtpRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

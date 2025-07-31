@@ -182,12 +182,14 @@
     // Load Payments [GET Payment]
     async function loadPayments() {
 
-        const user_name_response = await fetch("/api/payments/user",{
+        const user_res = await fetch("/api/payments/user",{
                 method : "GET",
                 credentials: "include"
          });
 
-         const user_name = await user_name_response.text();
+        if (user_res.status === 401) { window.location.href = "/auth/register"; return; }
+
+         const user_name = await user_res.text();
          document.getElementById("user_name").innerText = `User: ${user_name}`;
 
 
@@ -195,9 +197,7 @@
         // res --> promise (fetch returns promise)
         const res = await fetch("/api/payments", { credentials: "include" });
 
-        // 401 --> unauthorized(invalid or expired jwt)
 
-        if (res.status === 401) { window.location.href = "/auth/register"; return; }
 
         // data --> promise (.json() return promise)
         const data = await res.json(); //[json data --> Js object]
@@ -293,8 +293,14 @@
 
     // Logout
     async function logout() {
-        await fetch("/logout", { method: "POST", credentials: "include" });
-        window.location.href = "/auth/register";
+        const res = await fetch("/api/payments/logout", { method: "POST", credentials: "include" });
+
+        if(res.ok){
+            window.location.href = "/auth/register?msg=loggedOut";
+        }
+        else{
+            alert("Logout failed. Please try again.");
+        }
     }
 
     // Load on page start

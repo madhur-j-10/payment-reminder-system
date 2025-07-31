@@ -1,6 +1,8 @@
 package com.system.payment_reminder_system.filters;
 
 import com.system.payment_reminder_system.utility.JwtUtil;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -36,16 +38,29 @@ public class JwtFilter extends OncePerRequestFilter {
                 }
             }
         }
+        // if token == null --> Unauthorized and if token == expired --> session expired
+        try {
+            if(token != null && jwtUtil.validateToken(token)) {
 
-        if(token != null && jwtUtil.validateToken(token)){
+                String email = jwtUtil.extractEmail(token);
+                UsernamePasswordAuthenticationToken auth =
+                        new UsernamePasswordAuthenticationToken(email, null, Collections.emptyList());
+                SecurityContextHolder.getContext().setAuthentication(auth);
 
-            String email = jwtUtil.extractEmail(token);
-            UsernamePasswordAuthenticationToken auth =
-                    new UsernamePasswordAuthenticationToken(email, null, Collections.emptyList());
-            SecurityContextHolder.getContext().setAuthentication(auth);
+            }
+
+        }
+        catch (ExpiredJwtException e){
+
+            request.setAttribute("expired", true);
+        }
+        catch (JwtException e) {
+
+            request.setAttribute("invalid", true);
 
         }
         filterChain.doFilter(request, response);
+
 
     }
 }

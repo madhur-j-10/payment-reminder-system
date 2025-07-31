@@ -23,10 +23,4 @@ public class OtpEntity {
     private LocalDateTime expirationTime;
 
 
-
-//    public Otp(String otp, User user) {
-//        this.otp = otp;
-//        this.user = user;
-//        this.expirationTime = LocalDateTime.now().plusMinutes(5);
-//    }
 }
