@@ -91,25 +91,20 @@ public class PaymentServiceImpl implements PaymentService{
 
         List<Payment> upcoming = paymentRepository.findByDeadlineBetween(startOfDayAfterTomorrow,startOfThreeDaysLater);
         List<Payment> dueToday = paymentRepository.findByDeadlineBetween(today,startOfTomorrow);
+
         //retrieves all Payment records where the dueDate field is before the given today date and time
         List<Payment> overDue = paymentRepository.findByDeadlineBefore(today);
 
 
-//        for(Payment payment : upcoming){
-//            if(payment.getStatus() == PaymentStatus.PENDING){
-//                sendReminder(payment, "upcoming");
-//            }
-//        }
-        //OR
         upcoming.stream()
-                .filter(payment -> payment.getStatus() == PaymentStatus.PENDING) //lemdah function
+                .filter(payment -> payment.getStatus() == PaymentStatus.PENDING)
                 .forEach(payment -> sendReminder(payment,"upcoming"));
 
         dueToday.stream()
                 .filter(payment -> payment.getStatus() == PaymentStatus.PENDING)
                 .forEach(payment -> sendReminder(payment,"dueToday"));
         overDue
-                .forEach(payment -> sendReminder(payment,"upcoming"));
+                .forEach(payment -> sendReminder(payment,"overdue"));
 
 
     }
@@ -121,7 +116,7 @@ public class PaymentServiceImpl implements PaymentService{
                 .orElseThrow(() -> new RuntimeException("user not found!!"));
 
         Context context = new Context();
-
+        context.setVariable("paymentName", payment.getPaymentName());
         context.setVariable("name", user.getUsername());
         context.setVariable("amount", payment.getAmount());
         context.setVariable("dueDate", payment.getDeadline());
@@ -146,11 +141,6 @@ public class PaymentServiceImpl implements PaymentService{
 
 
         String url = buildDynamicUrl();
-
-
-//        System.out.println("***************");
-//        System.out.println(url);
-//        System.out.println("***************");
 
         context.setVariable("url", url);
 

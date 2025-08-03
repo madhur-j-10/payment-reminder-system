@@ -14,12 +14,13 @@
 
     <h3>Payment Summary:</h3>
     <ul>
+        <li><strong>Payment Name:</strong> <span th:text="${paymentName}"></span></li>
         <li><strong>Amount:</strong> ₹<span th:text="${amount}"></span></li>
         <li><strong>Due Date:</strong> <span th:text="${dueDate}"></span></li>
         <li><strong>Title:</strong> <span th:text="${category}"></span></li>
     </ul>
 
-    <a th:href="@{${url}}" class="btn">Manage Payment</a>
+    <a th:href="@{${url}}" class="btn" target="_blank">Manage Payment</a>
 </div>
 </body>
 </html>
