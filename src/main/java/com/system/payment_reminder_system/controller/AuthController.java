@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 @Controller
@@ -47,23 +48,22 @@ public class AuthController {
         //duplicate email found during registration redirect to /auth/register
         model.addAttribute("update", error); //dom
         return "index";
-//            return "redirect:/auth/register";
 
     }
 
     @PostMapping("/verify-otp")
     private String verifyOtp(@RequestParam String email,
                              @RequestParam String otp,
-                             Model model) {
+                             Model model,
+                             RedirectAttributes redirectAttributes) {
 
         //returns empty string if verified successfully else return error message
         String result = authService.verifyOtp(otp,email);
 
         // verified --> redirect to /auth/register
         if("".equals(result)){
-            model.addAttribute("update", "User Verified!!"); //dom
-            return "index";
-//            return "redirect:/auth/register";
+            redirectAttributes.addFlashAttribute("update", "User Verified!!"); //dom
+            return "redirect:/auth/register";
         }
 
 
@@ -87,7 +87,8 @@ public class AuthController {
 
     @PostMapping("/send-otp")
     public String sendLoginOtp(@RequestParam String email,
-                               Model model) {
+                               Model model,
+                               RedirectAttributes redirectAttributes) {
         //check user exists or not by email
         if(authService.isUserExists(email)){
 
@@ -103,16 +104,16 @@ public class AuthController {
             }
 
             if("notVerified".equalsIgnoreCase(result)){
-                model.addAttribute("error", "User Not Verified!!");
-                //redirect instead of returning page
-                return "index";
+                redirectAttributes.addFlashAttribute("error", "User Not Verified!!");
+
+                return "redirect:/auth/register";
             }
 
         }
 
-        model.addAttribute("error", "User Not Exists!!");
-        //redirect instead of returning page
-        return "index";
+        redirectAttributes.addFlashAttribute("error", "User Not Exists!!");
+
+        return "redirect:/auth/register";
     }
 
     @PostMapping("/verify-login-otp")

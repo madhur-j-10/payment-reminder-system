@@ -184,22 +184,30 @@
 
         const user_res = await fetch("/api/payments/user",{
                 method : "GET",
-                credentials: "include"
+                credentials: "include",
+                headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
          });
 
-        if (user_res.status === 401) { window.location.href = "/auth/register"; return; }
-
-         const user_name = await user_res.text();
+ 
+         
+         const user_name = await user_res.text();   //not .json()
          document.getElementById("user_name").innerText = `User: ${user_name}`;
 
 
 
         // res --> promise (fetch returns promise)
-        const res = await fetch("/api/payments", { credentials: "include" });
+        const res = await fetch("/api/payments", { 
+            credentials: "include", 
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        });
 
 
 
-        // data --> promise (.json() return promise)
+        // data --> promise's Response object (.json() return promise) and await convert it into response
         const data = await res.json(); //[json data --> Js object]
 
         //table --> <tbody>
@@ -231,7 +239,7 @@
                         <button class="btn btn-red" onclick="deletePayment(${payment.paymentId})">Delete</button>
                     </td>
                 </tr>`;
-        });
+        }); //end of forEach loop
     }
 
     //  Add Payment [CREATE (POST)]
@@ -275,19 +283,39 @@
 
         if (!id || !status) return;
 
-        await fetch(`/api/payments/${id}/status?status=${status}`, {
+        const res = await fetch(`/api/payments/${id}/status?status=${status}`, {
             method: "PATCH",
-            credentials: "include"
+            credentials: "include",
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
         });
+        if(res.status == 401){
+            const result = await res.json();
+            if(result.redirect){
+                window.location.href = 
+                    result.redirect;
+            }
+        }
         loadPayments();
     }
 
     // Delete Payment
     async function deletePayment(id) {
-        await fetch(`/api/payments/${id}`, {
+        const res = await fetch(`/api/payments/${id}`, {
             method: "DELETE",
-            credentials: "include"
+            credentials: "include",
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
         });
+        if(res.status == 401){
+            const result = await res.json();
+            if(result.redirect){
+                window.location.href = 
+                    result.redirect;
+            }
+        }
         loadPayments();
     }
 

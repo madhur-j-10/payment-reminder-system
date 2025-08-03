@@ -16,9 +16,16 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
+
+    private static final List<String> WHITE_LIST = List.of(
+            "/favicon.ico",
+            "/auth"
+
+    );
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -28,6 +35,16 @@ public class JwtFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
+
+        String path = request.getRequestURI();
+
+
+        // exclude WHITE_LIST_URIS from checking token
+        if(WHITE_LIST.stream().anyMatch(path::startsWith)){
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String token = null;
         // extract token from all cookies in browser by iterating to each cookie
         if(request.getCookies() != null){

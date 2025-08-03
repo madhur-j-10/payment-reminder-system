@@ -20,7 +20,8 @@ public class SecurityConfig {
     @Autowired
     private JwtFilter jwtFilter;
 
-    private final String[] WHITE_LIST_URLS = {
+    private final String[] WHITE_LIST_URIS = {
+            "/favicon.ico",
       "/auth/**","/css/**","/js/**"
     };
 
@@ -30,7 +31,7 @@ public class SecurityConfig {
                 .cors(cors -> {})
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(WHITE_LIST_URLS).permitAll()
+                        .requestMatchers(WHITE_LIST_URIS).permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -39,18 +40,35 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception
                 .authenticationEntryPoint((request, response, authException) -> {
 
-                    String msg = "unauthorized"; // default
+                    String path = request.getRequestURI();
 
-                    if(request.getAttribute("expired") != null){
-                        msg = "expired";
+                    if(!path.startsWith("/error")){
+                        String msg = "unauthorized"; // default
 
+                        if(request.getAttribute("expired") != null){
+                            msg = "expired";
+
+                        }
+
+                        // Check if it's a fetch/ajax request
+                        String requestedWith = request.getHeader("X-Requested-With");
+
+                        if("XMLHttpRequest".equalsIgnoreCase(requestedWith)){
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
+                            response.setContentType("application/json");
+                            response.getWriter().write("{ \"redirect\": \"/auth/register?msg="  + msg + "\"}");
+                        }
+                        else{
+                            response.sendRedirect("/auth/register?msg=" + msg);
+
+                        }
                     }
 
-                    response.sendRedirect("/auth/register?msg=" + msg);
+
 
                 })
                 );
-        //add our custom filter
+        //add our custom filter(one time when program start running)
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
