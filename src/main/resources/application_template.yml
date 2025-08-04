@@ -1,10 +1,10 @@
-
 spring:
   datasource:
-    url: ${db_url}
-    username: ${db_user}
-    password: ${db_password}
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
+
   jpa:
     show-sql: true
     hibernate:
@@ -13,12 +13,14 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${email_user}
-    password: ${email_password}
+    username: ${EMAIL_USER}
+    password: ${EMAIL_PASSWORD}
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
-JWT_SECRET: ${jwt_secret}
+
+jwt:
+  secret: ${JWT_SECRET}
