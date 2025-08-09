@@ -38,7 +38,10 @@ build/
 #git rm --cached src/main/resources/application.yml
 
 src/main/resources/application.yml
+.env
 
+
+# SMS authentication
 src/main/resources/templates/smsOtpPage.html
 src/main/resources/templates/smsIndex.html
 src/main/java/com/system/payment_reminder_system/utility/SmsJwtUtil.java
